@@ -1,12 +1,16 @@
 <h2>New Hand Just Got Dealt!</h2>
+
 <br>
-<p>Dealer's cards:</p>
-<ul>
-  <% session[:dealer_hand].each do |card| %>
-    <li><%= card.to_s %></li>
-  <% end %>
-</ul>
-<p>Dealer's value is <%= session[:dealer_value] %></p> <!-- hide this later, only show after 'stay' has been hit'-->
+
+<div class="well">
+  <h4>Dealer's cards:</h4>
+  <ul class="cards">
+    <% session[:dealer_hand].each do |card| %>
+      <li><%= card_image(card) %></li>
+    <% end %>
+  </ul>
+  <p>Dealer's value is <%= session[:dealer_value] %></p> <!-- hide this later, only show after 'stay' has been hit'-->
+</div>
 
 <% if session[:dealer_turn?] %>
   <form class="form" action="/dealer_add_card" method="post" style="display: inline">
@@ -17,14 +21,19 @@
   </div>
 <% end %>
 
-<br> 
-<p><%= session[:username] %>'s cards:</p>
-<ul>
-  <% session[:player_hand].each do |card| %>
-    <li><%= card.to_s %></li>
-  <% end %>
-</ul>
-<p><%= session[:username] %>'s value is <%= session[:player_value] %></p>
+<br>
+<br>
+
+<div class="well">
+  <h4><%= session[:username] %>'s cards:</h4>
+  <ul class="cards">
+    <% session[:player_hand].each do |card| %>
+      <li><%= card_image(card) %></li>
+    <% end %>
+  </ul>
+  <p><%= session[:username] %>'s value is <%= session[:player_value] %></p>
+</div>
+
 <br>
 
 <% if session[:player_turn?] %>
@@ -45,9 +54,7 @@
     <div class="alert alert-success">
       <strong>Congratulations <%= session[:username] %></strong>, you hit blackjack, you win the hand.
     </div>
-  <% end %>
-
-  <% if session[:dealer_value] > 21 %>
+  <% elsif session[:dealer_value] > 21 %>
     <div class="alert alert-success">
       <strong>Congratulations <%= session[:username] %></strong>, dealer busted, you win the hand.
     </div>

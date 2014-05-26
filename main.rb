@@ -9,37 +9,58 @@ CARD_SUITS = ['C', 'D', 'H', 'S']
 CARD_RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
 
 #helper functions
-def calculate_value(hand)
-  value = 0
+helpers do
+  def calculate_value(hand)
+    value = 0
 
-  hand.each do |card|
-    if card[1] == 'A' # A case
-      value += 11
-    elsif card[1].to_i == 0 # K, Q, J cases
-      value += 10
-    else
-      value += card[1].to_i
+    hand.each do |card|
+      if card[1] == 'A' # A case
+        value += 11
+      elsif card[1].to_i == 0 # K, Q, J cases
+        value += 10
+      else
+        value += card[1].to_i
+      end
     end
+
+    hand.select{ |card| card[1] == 'A' }.count.times do
+      value -= 10 if value > 21
+    end
+
+    value
   end
 
-  hand.select{ |card| card[1] == 'A' }.count.times do
-    value -= 10 if value > 21
+  def card_image(card) #[suit, value]
+    suit = case card[0]
+      when 'H' then 'hearts'
+      when 'D' then 'diamonds'
+      when 'C' then 'clubs'
+      when 'S' then 'spades'
+    end
+
+    value = case card[1]
+      when 'J' then 'jack'
+      when 'Q' then 'queen'
+      when 'K' then 'king'
+      when 'A' then 'ace'
+      else card[1]
+    end
+
+    "<img src='images/cards/#{suit}_#{value}.jpg'>"
   end
 
-  value
-end
+  def determine_winner
+    session[:player_value] = calculate_value(session[:player_hand])
+    session[:dealer_value] = calculate_value(session[:dealer_hand]) 
 
-def determine_winner
-  session[:player_value] = calculate_value(session[:player_hand])
-  session[:dealer_value] = calculate_value(session[:dealer_hand]) 
-
-  if session[:player_value] > session[:dealer_value]
-    session[:player_wins?] = true
-  elsif session[:player_value] < session[:dealer_value]
-    session[:dealer_wins?] = true
-  else
-    #tie
-  end    
+    if session[:player_value] > session[:dealer_value]
+      session[:player_wins?] = true
+    elsif session[:player_value] < session[:dealer_value]
+      session[:dealer_wins?] = true
+    else
+      #tie
+    end    
+  end
 end
 
 
@@ -60,6 +81,12 @@ end
 
 #storing the player name
 post '/login' do
+  if params[:username].empty?
+    @error = "Please state your name before playing."
+    halt erb :login #halt stops the further execution and return only
+                    #what we specify after (erb :login here)
+  end
+
   session[:username] = params[:username]
   redirect '/set_start_values'
 end
