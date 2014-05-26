@@ -1,0 +1,89 @@
+<h2>New Hand Just Got Dealt!</h2>
+<br>
+<p>Dealer's cards:</p>
+<ul>
+  <% session[:dealer_hand].each do |card| %>
+    <li><%= card.to_s %></li>
+  <% end %>
+</ul>
+<p>Dealer's value is <%= session[:dealer_value] %></p> <!-- hide this later, only show after 'stay' has been hit'-->
+
+<% if session[:dealer_turn?] %>
+  <form class="form" action="/dealer_add_card" method="post" style="display: inline">
+    <button class="btn btn-info" type="submit">Next Card for the Dealer...</button>
+  </form>
+  <div class="alert alert-info" style="display: inline">
+    Dealer has <%= session[:dealer_value] %> and will hit.
+  </div>
+<% end %>
+
+<br> 
+<p><%= session[:username] %>'s cards:</p>
+<ul>
+  <% session[:player_hand].each do |card| %>
+    <li><%= card.to_s %></li>
+  <% end %>
+</ul>
+<p><%= session[:username] %>'s value is <%= session[:player_value] %></p>
+<br>
+
+<% if session[:player_turn?] %>
+  <form class="form" action="/hit" method="post" style="display: inline">
+    <button class="btn btn-success" type="submit">Hit</button>
+  </form>
+  <form class="form" action="/stay" method="post" style="display: inline">
+    <button class="btn btn-danger" type="submit">Stay</button>
+  </form>
+<% end %>
+
+<% if !session[:hand_in_play?] %>
+  <% if session[:player_value] > 21 %>
+    <div class="alert alert-error">
+      <strong>Sorry <%= session[:username] %></strong>, you busted, dealer wins.
+    </div>
+  <% elsif session[:player_value] == 21 %>
+    <div class="alert alert-success">
+      <strong>Congratulations <%= session[:username] %></strong>, you hit blackjack, you win the hand.
+    </div>
+  <% end %>
+
+  <% if session[:dealer_value] > 21 %>
+    <div class="alert alert-success">
+      <strong>Congratulations <%= session[:username] %></strong>, dealer busted, you win the hand.
+    </div>
+  <% elsif session[:dealer_value] == 21 %>
+    <div class="alert alert-error">
+      <strong>Sorry <%= session[:username] %></strong>, dealer hit blackjack, dealer wins.
+    </div>
+  <% end %>
+
+  <% if session[:player_value] < 21 && session[:dealer_value] < 21 %>
+    <% if session[:player_wins?] %>
+      <div class="alert alert-success">
+        Your score is higher, <%= session[:username] %>. You win.
+      </div>
+    <% elsif session[:dealer_wins?] %>
+      <div class="alert alert-error">
+        Dealer's score is higher than yours, <%= session[:username] %>, dealer wins.
+      </div>
+    <% else %> 
+      <div class="alert alert-info">
+        It's a tie
+      </div>
+    <% end %>
+  <% end %>
+  
+  <p>Do you want to play again, <%= session[:username] %>?</p>
+  <form class="form" action="/play_again" method="post" style="display: inline">
+    <button class="btn btn-success" type="submit">Yes</button>
+  </form>
+  <form class="form" action="/game_over" method="post" style="display: inline">
+    <button class="btn btn-danger" type="submit">No</button>
+  </form>
+<% end %>
+
+
+
+
+
+<!-- <%= session[:username] %>  this is how to refer to the username -->

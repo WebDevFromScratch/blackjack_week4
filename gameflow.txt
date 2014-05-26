@@ -1,0 +1,36 @@
+Okay, so this is a gameflow blueprint for my Blackjack Sinatra webapp
+
+/home
+  Here it could either be a login form of sorts, or maybe some sort of a welcome
+  message + a link to a login form
+  (could redirect to /login or /name) GET
+
+/login
+  Here one would need to give his/her name into the designed form
+    - the name would be saved to a cookie (param, variable) POST
+    - after clicking some sort of login button, it'd need to redirect
+      to a /betting phase GET
+
+/betting
+  Here the player would specify the bet amount
+    - the amount needs to be stored somewhere too POST
+    - (probably we'd need a bankroll variable of sorts as well)
+    - after specifying the bet, clicking a bet button would
+      further re-direct to the /game phase itself GET
+
+/game
+  Here the hand takes place
+    - logic would need to be implemented here somehow
+      - logic probably could be just copied from procedural blackjack
+      - GUI
+        - cards/hands
+        - hit and stay buttons
+    - we'd probably also need some alerts for result of a given hand
+    - after the hand finishes, we'd need to store new bankroll POST
+    - if one decides to continue playing, we'd redirect him back to
+      the betting phase
+
+NEXT to do:
+  - make some mockups
+   - do it better graphically then in the example! go one step further and show yourself!
+    (you know some front-end, be the guy who goes the extra mile!)
