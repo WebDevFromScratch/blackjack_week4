@@ -1,10 +1,18 @@
-.cards {
+ul.cards {
   list-style-type: none;
   margin-top: 20px;
   margin-bottom: 20px;
 }
 
-.cards li {
+ul.cards li {
   display: inline;
   margin-right: 10px;
+}
+
+.inline {
+  display: inline;
+}
+
+.centered {
+  text-align: center;
 }

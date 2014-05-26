@@ -6,7 +6,7 @@ set :sessions, true
 
 #constants
 CARD_SUITS = ['C', 'D', 'H', 'S']
-CARD_RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
+CARD_RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 
 #helper functions
 helpers do
@@ -63,9 +63,7 @@ helpers do
   end
 end
 
-
-#here we start the game
-#sending player to login first if there is no logged player
+#start of the game logic
 get '/' do
   if session[:username]
     redirect '/set_start_values'
@@ -113,7 +111,6 @@ get '/set_start_values' do
 
   session[:player_value] = calculate_value(session[:player_hand])
   session[:dealer_value] = calculate_value(session[:dealer_hand])
-  #can replace dealer value so it counts without first card for starters
 
   if session[:player_value] < 21
     session[:player_turn?] = true
@@ -125,9 +122,6 @@ get '/set_start_values' do
 end
 
 get '/game' do
-  #session[:player_value] = calculate_value(session[:player_hand])
-  #session[:dealer_value] = calculate_value(session[:dealer_hand])
-
   if (!session[:player_turn?] && !session[:dealer_turn?])
     determine_winner
     session[:hand_in_play?] = false
@@ -144,8 +138,6 @@ end
 post '/stay' do
   #changing state (turn)
   session[:player_turn?] = false
-
-  #here goes the dealer turn --> moved to dealer add card
 
   redirect '/check_dealer'
 end
@@ -193,4 +185,6 @@ get '/game_over' do
   erb :game_over
 end
 
-#TO DOs !!!!
+get '/restart' do
+  redirect '/'
+end
