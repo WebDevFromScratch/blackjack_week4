@@ -1,0 +1,72 @@
+Please review this quiz, which covers lesson 3 materials.
+
+    1. What is HTML? What is CSS? What is Javascript?
+
+        - HTML is a markup language that is commonly used to build websites.
+        - CSS is a language that affects 'style' of the websites, determines the end look and make it prettier. HTML gives us the structure and creates all the basic elements that we can further style with CSS.
+        - Javascript is a programming language that is often use to create animated elements on the front-end of websites, give them that more interactive look and feel. It's main advantage is the fact that it's functionalities run in client's web browser itself.
+
+    2. What are the major parts of an HTTP request?
+
+        - Verb (or method): most common are GET and POST
+        - URL
+        - parameters
+
+    3. What are the major parts of an HTTP response?
+
+        - status code (common are: 200 - OK, 302 - redirect and 404 - file not found)
+        - payload
+
+    4. How do you submit an HTTP POST request, with a "username" attribute set to "bob"? What if we wanted a GET request instead?
+
+        !!!I'm not totally sure how do I answer this, please let me know if it's not what you were asking for!!!
+
+        We can issue a request through the use of forms:
+
+        POST
+        <form class="form-inline" action="/login" method="post">
+            <input type="text" username="bob">
+        </form>
+
+        GET
+        <form class="form-inline" action="/login">
+            <input type="text" username="bob">
+        </form>
+
+    5. Why is it important for us, as web developers, to understand that HTTP is a "stateless" protocol?
+
+        Because understanding that HTTP doesn't carry any stored variables (states) in itself makes us realize it's essential to use tools like databases (or sessions, as we learned) to store and access data that is needed throughout the time our app is running.
+
+    6. If the internet is just HTTP requests/responses, why do we only use browsers to interface with web applications? Are there any other options?
+
+        !!!Not sure
+
+        Because we need a way to somehow render our code into a view (using HTML)?
+
+    7. What is MVC, and why is it important?
+
+        MVC stands for Module - View - Controller. It helps us understand how our app processes run and how each part of this scheme interacts with each other. All requests are taken by the controller which, depending on a request type, decides what action to further take. If we need to store/change/access some data (usually with a POST request), we are taken to the model part (persistence layer), interact with that data and it's then given back to the controller which decides what to do further. Usually it's either rendering a view, which completes the response or redirecting to some other URL, which means a new request (that is once again being sent to the controller and so on). With a GET request, we don't usually need to interact with the persistence layer, so the controller either renders a view or sends a redirect request.
+
+The below questions are about Sinatra:
+
+    1. At a high level, how are requests processed?
+
+       Through redirects (to new request) and render (completing the response) keywords.
+
+    2. In the controller/action, what's the difference between rendering and redirecting?
+
+        Rendering means showing or refreshing a template, which can be done whenever we want. Redirecting sends us to a new route/URL, meaning a whole new request.
+
+    3. In the ERB view template, how do you show dynamic content?
+
+        Between these <%= some_ruby_code => brackets. (If we don't want to see the output: <% some_ruby_code %>)
+
+    4. Given what you know about ERB templates, when do you suppose the ERB template is turned into HTML?
+
+        !!!Not sure
+
+        When the response is given.
+
+    5. What's the role of instance variables in Sinatra?
+
+        They are only accessed during a single HTTP request, so we can use them accordingly. For example when we want to render something only if the variable is of a given value and not for the whole time our app is running.
