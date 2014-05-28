@@ -7,6 +7,10 @@ set :sessions, true
 #constants
 CARD_SUITS = ['C', 'D', 'H', 'S']
 CARD_RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+BLACKJACK = 21
+DEALER_STOP = 17
+INITIAL_BANKROLL = 1000
+BANKRUPT = 0
 
 #helper functions
 helpers do
@@ -24,7 +28,7 @@ helpers do
     end
 
     hand.select{ |card| card[1] == 'A' }.count.times do
-      value -= 10 if value > 21
+      value -= 10 if value > BLACKJACK
     end
 
     value
@@ -49,11 +53,27 @@ helpers do
     "<img src='images/cards/#{suit}_#{value}.jpg'>"
   end
 
+  def hand_in_play?
+    if (!session[:player_turn?] && !session[:dealer_turn?])
+      determine_winner
+      recalculate_bankroll
+      session[:hand_in_play?] = false
+    end
+  end
+
   def determine_winner
     session[:player_value] = calculate_value(session[:player_hand])
     session[:dealer_value] = calculate_value(session[:dealer_hand]) 
 
-    if session[:player_value] > session[:dealer_value]
+    if session[:player_value] == BLACKJACK
+      session[:player_wins?] = true
+    elsif session[:player_value] > BLACKJACK
+      session[:dealer_wins?] = true
+    elsif session[:dealer_value] == BLACKJACK
+      session[:dealer_wins?] = true
+    elsif session[:dealer_value] > BLACKJACK
+      session[:player_wins?] = true
+    elsif session[:player_value] > session[:dealer_value]
       session[:player_wins?] = true
     elsif session[:player_value] < session[:dealer_value]
       session[:dealer_wins?] = true
@@ -61,10 +81,21 @@ helpers do
       #tie
     end    
   end
+
+  def recalculate_bankroll
+    if session[:player_wins?]
+      session[:bankroll] += session[:bet_amount]
+    elsif session[:dealer_wins?]
+      session[:bankroll] -= session[:bet_amount]
+    end
+  end
 end
 
 #start of the game logic
 get '/' do
+  #starting bankroll
+  session[:bankroll] = INITIAL_BANKROLL
+
   if session[:username]
     redirect '/set_start_values'
   else
@@ -85,7 +116,28 @@ post '/login' do
                     #what we specify after (erb :login here)
   end
 
+  #storing the username state
   session[:username] = params[:username]
+
+  redirect '/bet'
+end
+
+get '/bet' do
+  erb :bet
+end
+
+post '/bet' do
+  if params[:bet_amount].to_i == 0
+    @error = "Please enter a valid bet amount."
+    halt erb :bet
+  elsif params[:bet_amount].to_i > session[:bankroll]
+    @error = "You can't bet more than you have."
+    halt erb :bet
+  end
+
+  #storing the bet amount
+  session[:bet_amount] = params[:bet_amount].to_i
+
   redirect '/set_start_values'
 end
 
@@ -95,9 +147,11 @@ get '/set_start_values' do
   session[:dealer_hand] = []
 
   #setting up game states
+  session[:hand_in_play?] = true
   session[:player_turn?] = false
   session[:dealer_turn?] = false
-  session[:hand_in_play?] = true
+  session[:player_wins?] = false
+  session[:dealer_wins?] = false
 
   #initial deal
   session[:dealer_hand] << session[:deck].pop
@@ -105,27 +159,17 @@ get '/set_start_values' do
   session[:dealer_hand] << session[:deck].pop
   session[:player_hand] << session[:deck].pop
 
-  #winning states - both false at the start
-  session[:player_wins?] = false
-  session[:dealer_wins?] = false
-
   session[:player_value] = calculate_value(session[:player_hand])
   session[:dealer_value] = calculate_value(session[:dealer_hand])
 
-  if session[:player_value] < 21
+  if session[:player_value] < BLACKJACK
     session[:player_turn?] = true
-  else
-    session[:player_turn?] = false
   end
 
   redirect '/game'
 end
 
 get '/game' do
-  if (!session[:player_turn?] && !session[:dealer_turn?])
-    determine_winner
-    session[:hand_in_play?] = false
-  end
 
   erb :game
 end
@@ -145,23 +189,27 @@ end
 get '/check_player' do
   session[:player_value] = calculate_value(session[:player_hand])
 
-  if session[:player_value] >= 21
+  if session[:player_value] >= BLACKJACK
     session[:player_turn?] = false
   end
 
-  redirect '/game'
+  hand_in_play?
+
+  erb :game
 end
 
 get '/check_dealer' do
   session[:dealer_value] = calculate_value(session[:dealer_hand])
 
-  if session[:dealer_value] < 17
+  if session[:dealer_value] < DEALER_STOP
     session[:dealer_turn?] = true
   else
     session[:dealer_turn?] = false
   end
 
-  redirect '/game'
+  hand_in_play?
+
+  erb :game
 end
 
 
@@ -172,7 +220,11 @@ post '/dealer_add_card' do
 end
 
 post '/play_again' do
-  redirect '/set_start_values'
+  if session[:bankroll] == BANKRUPT
+    redirect '/game_over'
+  else
+    redirect '/bet'
+  end
 end
 
 post '/game_over' do
@@ -180,11 +232,12 @@ post '/game_over' do
 end
 
 get '/game_over' do
-  session[:username] = false
 
   erb :game_over
 end
 
 get '/restart' do
+  session[:username] = false
+
   redirect '/'
 end

@@ -1,5 +1,6 @@
 <br>
 <h2>New Hand Just Got Dealt!</h2>
+<h4><%= session[:username] %>'s Bankroll: $<%= session[:bankroll] %></h4>
 <br>
 
 <div class="well">
@@ -13,6 +14,12 @@
 </div>
 
 <div class="well">
+  <% if session[:hand_in_play?] %>
+    <div class="alert alert-info">
+      Your bet for this hand is $<strong><%= session[:bet_amount] %></strong>.
+    </div>
+  <% end %>
+
   <% if session[:dealer_turn?] %>
     <form class="form inline" action="/dealer_add_card" method="post">
       <button class="btn btn-info" type="submit">Next Card for the Dealer...</button>
@@ -32,28 +39,29 @@
       <button class="btn btn-danger" type="submit">Stay</button>
     </form>
   <% end %>
+  
 
   <% if !session[:hand_in_play?] %>
     <h4>The Hand is Over</h4>
-    <% if session[:player_value] > 21 %>
+    <% if session[:player_value] > BLACKJACK %>
       <div class="alert alert-error">
         <strong>Sorry <%= session[:username] %></strong>, you busted, dealer wins.
       </div>
-    <% elsif session[:player_value] == 21 %>
+    <% elsif session[:player_value] == BLACKJACK %>
       <div class="alert alert-success">
         <strong>Congratulations <%= session[:username] %></strong>, you hit blackjack, you win the hand.
       </div>
-    <% elsif session[:dealer_value] > 21 %>
+    <% elsif session[:dealer_value] > BLACKJACK %>
       <div class="alert alert-success">
         <strong>Congratulations <%= session[:username] %></strong>, dealer busted, you win the hand.
       </div>
-    <% elsif session[:dealer_value] == 21 %>
+    <% elsif session[:dealer_value] == BLACKJACK %>
       <div class="alert alert-error">
         <strong>Sorry <%= session[:username] %></strong>, dealer hit blackjack, dealer wins.
       </div>
     <% end %>
 
-    <% if session[:player_value] < 21 && session[:dealer_value] < 21 %>
+    <% if session[:player_value] < BLACKJACK && session[:dealer_value] < BLACKJACK %>
       <% if session[:player_wins?] %>
         <div class="alert alert-success">
           Your score is higher, <%= session[:username] %>. You win.

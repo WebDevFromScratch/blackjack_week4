@@ -1,0 +1,10 @@
+<br>
+<h2>How Much Would You Like to Bet This Hand?</h2>
+<br>
+<form class="form-inline" action="/bet" method="post">
+  <fieldset>
+    <legend><%= session[:username] %>'s Bankroll: $<%= session[:bankroll] %></legend>
+    <input type="text" placeholder="Enter Your Bet Amount" name="bet_amount">
+    <button type="submit" class="btn btn-info">Make a Bet</button>
+  </fieldset>
+</form>

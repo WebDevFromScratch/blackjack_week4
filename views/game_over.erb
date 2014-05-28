@@ -1,6 +1,11 @@
 <br>
-<h2>Sorry to see you go...</h2>
+<h2>Game Over</h2>
+<% if session[:bankroll] == BANKRUPT %>
+  <h4>You Have No More Money Left</h4>
+<% else %>
+  <h4>See You Next Time!</h4>
+<% end %>
 <br>
 <form class="form" action="/restart">
-  <button class="btn btn-info" type="submit">Start Again</button>
+  <button class="btn btn-info">Start Again</button>
 </form>
