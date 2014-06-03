@@ -1,110 +1,112 @@
-<br>
-<h2>New Hand Just Got Dealt!</h2>
-<h4><%= session[:username] %>'s Bankroll: $<%= session[:bankroll] %></h4>
-<br>
+<div id="whole">
+  <br>
+  <h2>New Hand Just Got Dealt!</h2>
+  <h4><%= session[:username] %>'s Bankroll: $<%= session[:bankroll] %></h4>
+  <br>
 
-<div class="well">
-  <h4><%= session[:username] %>'s cards:</h4>
-  <ul class="cards">
-    <% session[:player_hand].each do |card| %>
-      <li><%= card_image(card) %></li>
-    <% end %>
-  </ul>
-  <p><%= session[:username] %>'s value is <%= session[:player_value] %></p>
-</div>
-
-<div class="well">
-  <% if session[:hand_in_play?] %>
-    <div class="alert alert-info">
-      Your bet for this hand is $<strong><%= session[:bet_amount] %></strong>.
-    </div>
-  <% end %>
-
-  <% if session[:dealer_turn?] %>
-    <form class="form inline" action="/dealer_add_card" method="post">
-      <button class="btn btn-info" type="submit">Next Card for the Dealer...</button>
-    </form>
-    <div class="alert alert-info inline">
-      Dealer has <%= session[:dealer_value] %> and will hit.
-    </div>
-    <br>
-  <% end %>
-
-  <% if session[:player_turn?] %>
-    <h4>Make Your Decision, <%= session[:username] %></h4>
-    <form class="form inline" action="/hit" method="post">
-      <button class="btn btn-success" type="submit">Hit</button>
-    </form>
-    <form class="form inline" action="/stay" method="post">
-      <button class="btn btn-danger" type="submit">Stay</button>
-    </form>
-  <% end %>
-  
-
-  <% if !session[:hand_in_play?] %>
-    <h4>The Hand is Over</h4>
-    <% if session[:player_value] > BLACKJACK %>
-      <div class="alert alert-error">
-        <strong>Sorry <%= session[:username] %></strong>, you busted, dealer wins.
-      </div>
-    <% elsif session[:player_value] == BLACKJACK %>
-      <div class="alert alert-success">
-        <strong>Congratulations <%= session[:username] %></strong>, you hit blackjack, you win the hand.
-      </div>
-    <% elsif session[:dealer_value] > BLACKJACK %>
-      <div class="alert alert-success">
-        <strong>Congratulations <%= session[:username] %></strong>, dealer busted, you win the hand.
-      </div>
-    <% elsif session[:dealer_value] == BLACKJACK %>
-      <div class="alert alert-error">
-        <strong>Sorry <%= session[:username] %></strong>, dealer hit blackjack, dealer wins.
-      </div>
-    <% end %>
-
-    <% if session[:player_value] < BLACKJACK && session[:dealer_value] < BLACKJACK %>
-      <% if session[:player_wins?] %>
-        <div class="alert alert-success">
-          Your score is higher, <%= session[:username] %>. You win.
-        </div>
-      <% elsif session[:dealer_wins?] %>
-        <div class="alert alert-error">
-          Dealer's score is higher than yours, <%= session[:username] %>, dealer wins.
-        </div>
-      <% else %> 
-        <div class="alert alert-info">
-          It's a tie
-        </div>
+  <div class="well" id="player_area">
+    <h4><%= session[:username] %>'s cards:</h4>
+    <ul class="cards">
+      <% session[:player_hand].each do |card| %>
+        <li><%= card_image(card) %></li>
       <% end %>
+    </ul>
+    <p><%= session[:username] %>'s value is <%= session[:player_value] %></p>
+  </div>
+
+  <div class="well">
+    <% if session[:hand_in_play?] %>
+      <div class="alert alert-info">
+        Your bet for this hand is $<strong><%= session[:bet_amount] %></strong>.
+      </div>
+    <% end %>
+
+    <% if session[:dealer_turn?] %>
+      <form id="dealer_hit_form" class="form inline" action="/dealer_add_card" method="post">
+        <input class="btn btn-info" type="submit" value="Next Card for the Dealer..." />
+      </form>
+      <div class="alert alert-info inline">
+        Dealer has <%= session[:dealer_value] %> and will hit.
+      </div>
+      <br>
+    <% end %>
+
+    <% if session[:player_turn?] %>
+      <h4>Make Your Decision, <%= session[:username] %></h4>
+      <form id="hit_form" class="form inline" action="/hit" method="post">
+        <input class="btn btn-success" type="submit" value="Hit" />
+      </form>
+      <form id="stay_form" class="form inline" action="/stay" method="post">
+        <input class="btn btn-danger" type="submit" value="Stay" />
+      </form>
     <% end %>
     
-    <p>Do you want to play again, <%= session[:username] %>?</p>
-    <form class="form inline" action="/play_again" method="post">
-      <button class="btn btn-success" type="submit">Yes</button>
-    </form>
-    <form class="form inline" action="/game_over" method="post">
-      <button class="btn btn-danger" type="submit">No</button>
-    </form>
-  <% end %>
-</div>
 
-<div class="well">
-  <h4>Dealer's cards:</h4>
-  <ul class="cards">
-    <% if session[:player_turn?] %>
-      <% session[:dealer_hand].each_with_index do |card, index| %>
-        <% if index == 0 %>
-          <li><img src='images/cards/cover.jpg'></li>
-        <% else %>
+    <% if !session[:hand_in_play?] %>
+      <h4>The Hand is Over</h4>
+      <% if session[:player_value] > BLACKJACK %>
+        <div class="alert alert-error">
+          <strong>Sorry <%= session[:username] %></strong>, you busted, dealer wins.
+        </div>
+      <% elsif session[:player_value] == BLACKJACK %>
+        <div class="alert alert-success">
+          <strong>Congratulations <%= session[:username] %></strong>, you hit blackjack, you win the hand.
+        </div>
+      <% elsif session[:dealer_value] > BLACKJACK %>
+        <div class="alert alert-success">
+          <strong>Congratulations <%= session[:username] %></strong>, dealer busted, you win the hand.
+        </div>
+      <% elsif session[:dealer_value] == BLACKJACK %>
+        <div class="alert alert-error">
+          <strong>Sorry <%= session[:username] %></strong>, dealer hit blackjack, dealer wins.
+        </div>
+      <% end %>
+
+      <% if session[:player_value] < BLACKJACK && session[:dealer_value] < BLACKJACK %>
+        <% if session[:player_wins?] %>
+          <div class="alert alert-success">
+            Your score is higher, <%= session[:username] %>. You win.
+          </div>
+        <% elsif session[:dealer_wins?] %>
+          <div class="alert alert-error">
+            Dealer's score is higher than yours, <%= session[:username] %>, dealer wins.
+          </div>
+        <% else %> 
+          <div class="alert alert-info">
+            It's a tie
+          </div>
+        <% end %>
+      <% end %>
+      
+      <p>Do you want to play again, <%= session[:username] %>?</p>
+      <form class="form inline" action="/play_again" method="post">
+        <input class="btn btn-success" type="submit" value="Yes" />
+      </form>
+      <form class="form inline" action="/game_over" method="post">
+        <input class="btn btn-danger" type="submit" value="No" />
+      </form>
+    <% end %>
+  </div>
+
+  <div class="well">
+    <h4>Dealer's cards:</h4>
+    <ul class="cards">
+      <% if session[:player_turn?] %>
+        <% session[:dealer_hand].each_with_index do |card, index| %>
+          <% if index == 0 %>
+            <li><img src='images/cards/cover.jpg'></li>
+          <% else %>
+            <li><%= card_image(card) %></li>
+          <% end %>
+        <% end %>
+      <% else %>
+        <% session[:dealer_hand].each do |card| %>
           <li><%= card_image(card) %></li>
         <% end %>
       <% end %>
-    <% else %>
-      <% session[:dealer_hand].each do |card| %>
-        <li><%= card_image(card) %></li>
-      <% end %>
+    </ul>
+    <% if !session[:player_turn?] %>
+      <p>Dealer's value is <%= session[:dealer_value] %></p>
     <% end %>
-  </ul>
-  <% if !session[:player_turn?] %>
-    <p>Dealer's value is <%= session[:dealer_value] %></p>
-  <% end %>
+  </div>
 </div>

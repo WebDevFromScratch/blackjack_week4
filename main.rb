@@ -164,6 +164,8 @@ get '/set_start_values' do
 
   if session[:player_value] < BLACKJACK
     session[:player_turn?] = true
+  else
+    session[:hand_in_play?] = false
   end
 
   redirect '/game'
@@ -176,6 +178,7 @@ end
 
 post '/hit' do
   session[:player_hand] << session[:deck].pop
+
   redirect '/check_player'
 end
 
@@ -195,7 +198,7 @@ get '/check_player' do
 
   hand_in_play?
 
-  erb :game
+  erb :game, layout: false
 end
 
 get '/check_dealer' do
@@ -209,7 +212,7 @@ get '/check_dealer' do
 
   hand_in_play?
 
-  erb :game
+  erb :game, layout: false
 end
 
 
