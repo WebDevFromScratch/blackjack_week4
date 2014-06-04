@@ -10,7 +10,7 @@ $(document).ready(function() {
     return false;
   });
 
-  $('form#stay_form input').on('click', 'form#stay_form input', function() {
+  $(document).on('click', 'form#stay_form input', function() {
     $.ajax({
       type: 'POST',
       url: '/stay'
