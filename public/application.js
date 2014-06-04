@@ -10,7 +10,7 @@ $(document).ready(function() {
     return false;
   });
 
-  $('form#stay_form input').click(function() { //this doesn't need to be re-binded, only used once per game
+  $('form#stay_form input').on('click', 'form#stay_form input', function() {
     $.ajax({
       type: 'POST',
       url: '/stay'
