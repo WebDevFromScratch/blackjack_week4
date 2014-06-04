@@ -166,6 +166,7 @@ get '/set_start_values' do
     session[:player_turn?] = true
   else
     session[:hand_in_play?] = false
+    hand_in_play?
   end
 
   redirect '/game'
